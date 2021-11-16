@@ -1,11 +1,11 @@
 .PHONY: all build_dir test bench pprof trace test_all clean analyze fmt vet tidy lint cyclo tools
 
-all: build_dir test bench trace test_all
+all: build_dir tidy analyze test bench
 
 build_dir:
 	mkdir -p ./build/
 
-test: build_dir tidy analyze
+test: build_dir
 	go test -covermode=count -coverprofile=./build/profile.out ./...
 	if [ -f ./build/profile.out ]; then go tool cover -func=./build/profile.out; fi
 
@@ -25,13 +25,6 @@ pprof_web:
 	go tool pprof -http=localhost:8081 ./build/memprofile.out
 	go tool pprof -http=localhost:8082 ./build/blockprofile.out
 	go tool pprof -http=localhost:8083 ./build/mutexprofile.out
-
-trace: build_dir
-	go test -trace=./build/trace.out .
-	if [ -f ./build/trace.out ]; then go tool trace ./build/trace.out; fi
-
-test_all: test
-	go test all
 
 clean:
 	rm -rf ./build
