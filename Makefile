@@ -1,6 +1,6 @@
-.PHONY: all build_dir test bench pprof trace test_all clean analyze fmt vet tidy lint cyclo tools
+.PHONY: all build_dir test pprof trace test_all clean analyze fmt vet tidy lint cyclo tools
 
-all: build_dir tidy analyze test bench
+all: build_dir tidy analyze test
 
 build_dir:
 	mkdir -p ./build/
@@ -8,17 +8,6 @@ build_dir:
 test: build_dir
 	go test -covermode=count -coverprofile=./build/profile.out ./...
 	if [ -f ./build/profile.out ]; then go tool cover -func=./build/profile.out; fi
-
-bench: build_dir
-	go test \
-		-o=./build/bench.test \
-		-bench=. \
-		-cpuprofile=./build/cpuprofile.out \
-		-memprofile=./build/memprofile.out \
-		-blockprofile=./build/blockprofile.out \
-		-mutexprofile=./build/mutexprofile.out \
-		-benchtime=5s \
-		./...
 
 pprof_web:
 	go tool pprof -http=localhost:8080 ./build/cpuprofile.out
@@ -49,7 +38,6 @@ cyclo:
 	gocyclo -avg -over 15 -ignore "_test|Godeps|vendor/" -total .
 
 tools:
-	go get -u github.com/go-delve/delve/cmd/dlv@master
 	go get -u honnef.co/go/tools/cmd/staticcheck
 	go get -u github.com/cweill/gotests/...
 	go get -u golang.org/x/lint/golint
