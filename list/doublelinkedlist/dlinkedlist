@@ -1,28 +1,29 @@
-package linkedlist
+package dlinkedlist
 
 import "fmt"
 
-// LinkedList is the Datatype that holdes the HEAD Node to the linked list.
-// on the LinkedList object you then call all the fancy methods I've implemented
-type LinkedList struct {
+// DLinkedList is the Datatype that holdes the HEAD Node to the linked list.
+// on the DLinkedList object you then call all the fancy methods I've implemented
+type DLinkedList struct {
 	head *Node
 }
 
-// Node is the Data Node which constructs my LinkedList
+// Node is the Data Node which constructs my DLinkedList
 type Node struct {
 	Data int
 	Next *Node
+	Prev *Node
 }
 
-// New creates a empty LinkedList with no items
-func New() *LinkedList {
-	return &LinkedList{
+// New creates a empty DLinkedList with no items
+func New() *DLinkedList {
+	return &DLinkedList{
 		head: nil,
 	}
 }
 
 // NewFromArgs takes a input string and converts it to a linked list
-func NewFromArgs(items ...int) *LinkedList {
+func NewFromArgs(items ...int) *DLinkedList {
 	list := New()
 	for _, itm := range items {
 		list.InsertBack(itm)
@@ -31,8 +32,8 @@ func NewFromArgs(items ...int) *LinkedList {
 	return list
 }
 
-// Len returns the length of the LinkedList
-func (l *LinkedList) Len() int {
+// Len returns the length of the DLinkedList
+func (l *DLinkedList) Len() int {
 	len := 0
 	for iter := l.head; iter != nil; iter = iter.Next {
 		len++
@@ -40,12 +41,12 @@ func (l *LinkedList) Len() int {
 	return len
 }
 
-// String returns the string representatino of the LinkedList
-func (l *LinkedList) String() string {
+// String returns the string representatino of the DLinkedList
+func (l *DLinkedList) String() string {
 	output := ""
 
 	for iter := l.head; iter != nil; iter = iter.Next {
-		output += fmt.Sprintf("[%d]->", iter.Data)
+		output += fmt.Sprintf("[%d]<->", iter.Data)
 	}
 
 	output = output[:len(output)-2]
@@ -54,7 +55,7 @@ func (l *LinkedList) String() string {
 }
 
 // GetHead will return the Head node
-func (l *LinkedList) GetHead() *Node {
+func (l *DLinkedList) GetHead() *Node {
 	return l.head
 }
 
@@ -65,7 +66,7 @@ func (l *LinkedList) GetHead() *Node {
 //	[HEAD] -> Node 3 -> Node 1 -> Node 2 -> [EOF]
 // Returns the freshly inserted Element
 // Runtime complexity is O(1)
-func (l *LinkedList) InsertFront(data int) *Node {
+func (l *DLinkedList) InsertFront(data int) *Node {
 	return l.InsertAfter(nil, data)
 }
 
@@ -76,7 +77,7 @@ func (l *LinkedList) InsertFront(data int) *Node {
 //	[HEAD] -> Node 1 -> Node 2 -> Node 3 -> [EOF]
 // Returns the freshly inserted Element
 // Runtime complexity is O(n)
-func (l *LinkedList) InsertBack(data int) *Node {
+func (l *DLinkedList) InsertBack(data int) *Node {
 
 	if l.head == nil {
 		return l.InsertFront(data)
@@ -92,18 +93,21 @@ func (l *LinkedList) InsertBack(data int) *Node {
 //	[HEAD] -> Node 1 -> Node 3 -> Node 2 -> [EOF]
 // Returns the freshly inserted Element
 // Runtime complexity is O(1)
-func (l *LinkedList) InsertAfter(node *Node, data int) *Node {
+func (l *DLinkedList) InsertAfter(node *Node, data int) *Node {
 	var newNextNode *Node
+	var newPrevNode *Node
 
 	if node == nil {
 		newNextNode = l.head
 	} else {
 		newNextNode = node.Next
+		newPrevNode = node
 	}
 
 	newNode := &Node{
 		Data: data,
 		Next: newNextNode,
+		Next: newPrevNode
 	}
 
 	if node == nil {
@@ -121,7 +125,7 @@ func (l *LinkedList) InsertAfter(node *Node, data int) *Node {
 //	[HEAD] -> Node 1 -> Node 3 -> Node 2 -> [EOF]
 // Returns the freshly inserted Element
 // Runtime complexity is O(n)
-func (l *LinkedList) InsertBefore(node *Node, data int) *Node {
+func (l *DLinkedList) InsertBefore(node *Node, data int) *Node {
 	if node == nil {
 		return l.InsertFront(data)
 	}
@@ -149,7 +153,7 @@ func (l *LinkedList) InsertBefore(node *Node, data int) *Node {
 	return newNode
 }
 
-func (l *LinkedList) GetLast() *Node {
+func (l *DLinkedList) GetLast() *Node {
 	lastElement := l.head
 
 	for lastElement.Next != nil {
@@ -165,7 +169,7 @@ func (l *LinkedList) GetLast() *Node {
 //	to become
 // 	[Head] -> Node 1 -> Node 3 -> [EOF]
 // Returns the data of the deleted Node
-func (l *LinkedList) Delete(node *Node) int {
+func (l *DLinkedList) Delete(node *Node) int {
 	if node == l.head {
 		l.head = node.Next
 		return node.Data
