@@ -53,3 +53,30 @@ func (t *TreeNode) PostOrder() []int {
 
 	return res
 }
+
+func (t *TreeNode) GetListOfDepthsDFS() [][]int {
+	depth := t.Depth()
+
+	listOfDepthLevels := make([][]int, depth)
+
+	listOfDepthLevels = t.getListOfDepthsDFS(0, listOfDepthLevels)
+
+	return listOfDepthLevels
+}
+
+func (t *TreeNode) getListOfDepthsDFS(currentDepth int, listOfDepth [][]int) [][]int {
+
+	curListOfDepth := listOfDepth[currentDepth]
+	curListOfDepth = append(curListOfDepth, t.data) // pre-order traverse
+	listOfDepth[currentDepth] = curListOfDepth
+
+	if t.left != nil {
+		t.left.getListOfDepthsDFS(1+currentDepth, listOfDepth)
+	}
+
+	if t.right != nil {
+		t.right.getListOfDepthsDFS(1+currentDepth, listOfDepth)
+	}
+
+	return listOfDepth
+}

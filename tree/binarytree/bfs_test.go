@@ -1,8 +1,10 @@
 package binarytree
 
 import (
+	"math/rand"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestTreeNode_InsertLevelOrder(t *testing.T) {
@@ -179,5 +181,49 @@ func TestTreeNode_GetListOfDepths(t *testing.T) {
 				t.Errorf("TreeNode.GetListOfDepths() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func BenchmarkTreeNode_GetListOfDepths1000(b *testing.B) {
+	benchmarkTreeNode_GetListOfDepths(1000, b)
+}
+
+func BenchmarkTreeNode_GetListOfDepthsLevelOrder1000(b *testing.B) {
+	benchmarkTreeNode_GetListOfDepthsInsertLevelOrder(1000, b)
+}
+
+func BenchmarkTreeNode_GetListOfDepths20000(b *testing.B) {
+	benchmarkTreeNode_GetListOfDepths(20000, b)
+}
+
+func BenchmarkTreeNode_GetListOfDepthsLevelOrder20000(b *testing.B) {
+	benchmarkTreeNode_GetListOfDepthsInsertLevelOrder(20000, b)
+}
+
+func benchmarkTreeNode_GetListOfDepths(i int, b *testing.B) {
+	rand.Seed(time.Now().UnixNano())
+
+	tr := NewTreeNode(rand.Int())
+
+	for idx := 0; idx < i; idx++ {
+		tr.InsertBST(rand.Int())
+	}
+
+	for n := 0; n < b.N; n++ {
+		tr.GetListOfDepths()
+	}
+}
+
+func benchmarkTreeNode_GetListOfDepthsInsertLevelOrder(i int, b *testing.B) {
+	rand.Seed(time.Now().UnixNano())
+
+	tr := NewTreeNode(rand.Int())
+
+	for idx := 0; idx < i; idx++ {
+		tr.InsertLevelOrder(rand.Int())
+	}
+
+	for n := 0; n < b.N; n++ {
+		tr.GetListOfDepths()
 	}
 }
