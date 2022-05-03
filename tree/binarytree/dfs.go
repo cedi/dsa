@@ -3,17 +3,10 @@ package binarytree
 func (t *TreeNode) InOrder() []int {
 	res := make([]int, 0)
 
-	if t.left != nil {
-		left := t.left.InOrder()
-		res = append(res, left...)
-	}
-
-	res = append(res, t.data)
-
-	if t.right != nil {
-		right := t.right.InOrder()
-		res = append(res, right...)
-	}
+	t.InOrderTraversal(func(depth int, node *TreeNode) bool {
+		res = append(res, node.data)
+		return true
+	})
 
 	return res
 }
@@ -21,17 +14,10 @@ func (t *TreeNode) InOrder() []int {
 func (t *TreeNode) PreOrder() []int {
 	res := make([]int, 0)
 
-	res = append(res, t.data)
-
-	if t.left != nil {
-		left := t.left.PreOrder()
-		res = append(res, left...)
-	}
-
-	if t.right != nil {
-		right := t.right.PreOrder()
-		res = append(res, right...)
-	}
+	t.PreOrderTraversal(func(depth int, node *TreeNode) bool {
+		res = append(res, node.data)
+		return true
+	})
 
 	return res
 }
@@ -39,19 +25,60 @@ func (t *TreeNode) PreOrder() []int {
 func (t *TreeNode) PostOrder() []int {
 	res := make([]int, 0)
 
+	t.PostOrderTraversal(func(depth int, node *TreeNode) bool {
+		res = append(res, node.data)
+		return true
+	})
+
+	return res
+}
+
+func (t *TreeNode) InOrderTraversal(traversalFunc TraversalFunc) {
+	t.inOrderTraversal(0, traversalFunc)
+}
+
+func (t *TreeNode) inOrderTraversal(depth int, traversalFunc TraversalFunc) {
 	if t.left != nil {
-		left := t.left.PostOrder()
-		res = append(res, left...)
+		t.left.inOrderTraversal(depth+1, traversalFunc)
+	}
+
+	traversalFunc(depth, t)
+
+	if t.right != nil {
+		t.right.inOrderTraversal(depth+1, traversalFunc)
+	}
+}
+
+func (t *TreeNode) PreOrderTraversal(traversalFunc TraversalFunc) {
+	t.preOrderTraversal(0, traversalFunc)
+}
+
+func (t *TreeNode) preOrderTraversal(depth int, traversalFunc TraversalFunc) {
+	traversalFunc(depth, t)
+
+	if t.left != nil {
+		t.left.preOrderTraversal(depth+1, traversalFunc)
 	}
 
 	if t.right != nil {
-		right := t.right.PostOrder()
-		res = append(res, right...)
+		t.right.preOrderTraversal(depth+1, traversalFunc)
+	}
+}
+
+func (t *TreeNode) PostOrderTraversal(traversalFunc TraversalFunc) {
+	t.postOrderTraversal(0, traversalFunc)
+}
+
+func (t *TreeNode) postOrderTraversal(depth int, traversalFunc TraversalFunc) {
+	if t.left != nil {
+		t.left.postOrderTraversal(depth+1, traversalFunc)
 	}
 
-	res = append(res, t.data)
+	if t.right != nil {
+		t.right.postOrderTraversal(depth+1, traversalFunc)
+	}
 
-	return res
+	traversalFunc(depth, t)
 }
 
 func (t *TreeNode) GetListOfDepthsDFS() [][]int {
@@ -59,24 +86,12 @@ func (t *TreeNode) GetListOfDepthsDFS() [][]int {
 
 	listOfDepthLevels := make([][]int, depth)
 
-	listOfDepthLevels = t.getListOfDepthsDFS(0, listOfDepthLevels)
+	t.PreOrderTraversal(func(currentDepth int, node *TreeNode) bool {
+		curListOfDepth := listOfDepthLevels[currentDepth]
+		curListOfDepth = append(curListOfDepth, node.data)
+		listOfDepthLevels[currentDepth] = curListOfDepth
+		return true
+	})
 
 	return listOfDepthLevels
-}
-
-func (t *TreeNode) getListOfDepthsDFS(currentDepth int, listOfDepth [][]int) [][]int {
-
-	curListOfDepth := listOfDepth[currentDepth]
-	curListOfDepth = append(curListOfDepth, t.data) // pre-order traverse
-	listOfDepth[currentDepth] = curListOfDepth
-
-	if t.left != nil {
-		t.left.getListOfDepthsDFS(1+currentDepth, listOfDepth)
-	}
-
-	if t.right != nil {
-		t.right.getListOfDepthsDFS(1+currentDepth, listOfDepth)
-	}
-
-	return listOfDepth
 }

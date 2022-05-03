@@ -1,8 +1,6 @@
 package binarytree
 
-type LevelOrderTraversalFunc func(*TreeNode, int) bool
-
-func (t *TreeNode) LevelOrderTraversal(fn LevelOrderTraversalFunc) {
+func (t *TreeNode) LevelOrderTraversal(fn TraversalFunc) {
 	treeQueue := make([]*TreeNode, 0)
 
 	treeQueue = append(treeQueue, t)
@@ -14,7 +12,7 @@ Exit:
 			curNode := treeQueue[0]
 			treeQueue = treeQueue[1:]
 
-			ok := fn(curNode, curLevel)
+			ok := fn(curLevel, curNode)
 			if !ok {
 				break Exit
 			}
@@ -34,7 +32,7 @@ Exit:
 func (t *TreeNode) InsertLevelOrder(data int) *TreeNode {
 	newNode := NewTreeNode(data)
 
-	t.LevelOrderTraversal(func(node *TreeNode, _ int) bool {
+	t.LevelOrderTraversal(func(_ int, node *TreeNode) bool {
 		if node.left == nil {
 			node.left = newNode
 			return false
@@ -54,7 +52,7 @@ func (t *TreeNode) InsertLevelOrder(data int) *TreeNode {
 func (t *TreeNode) LevelOrder() []int {
 	res := make([]int, 0)
 
-	t.LevelOrderTraversal(func(node *TreeNode, _ int) bool {
+	t.LevelOrderTraversal(func(_ int, node *TreeNode) bool {
 		res = append(res, node.data)
 		return true
 	})
@@ -67,7 +65,7 @@ func (t *TreeNode) GetListOfDepths() [][]int {
 
 	listOfDepthLevels := make([][]int, depth)
 
-	t.LevelOrderTraversal(func(node *TreeNode, level int) bool {
+	t.LevelOrderTraversal(func(level int, node *TreeNode) bool {
 		levelList := listOfDepthLevels[level]
 		levelList = append(levelList, node.data)
 		listOfDepthLevels[level] = levelList

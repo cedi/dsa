@@ -2,6 +2,8 @@ package binarytree
 
 import "fmt"
 
+type TraversalFunc func(int, *TreeNode) bool
+
 type TreeNode struct {
 	left  *TreeNode
 	right *TreeNode
